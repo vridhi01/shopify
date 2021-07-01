@@ -9706,11 +9706,11 @@ request.open(
 
 request.onload = function() {
 
- var products = JSON.parse(request.response).data;
-console.log(products);
+ var listdata = JSON.parse(request.response).data;
+console.log(listdata);
 
  // Append product recommendations to the DOM.
- list.innerHTML = products.map(function(product) 
+ list.innerHTML = listdata.map(function(product) 
                      { return userData(product) }
                      ).join("");
 };
