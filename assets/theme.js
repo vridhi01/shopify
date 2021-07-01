@@ -9671,4 +9671,132 @@ document.addEventListener('DOMContentLoaded', function() {
 
 // Youtube API callback
 // eslint-disable-next-line no-unused-vars
+function onYouTubeIframeAPIReady() {
+  theme.Video.loadVideos();
+}
+
+function removeImageLoadingAnimation(image) {
+  // Remove loading animation
+  var imageWrapper = image.hasAttribute('data-image-loading-animation')
+    ? image
+    : image.closest('[data-image-loading-animation]');
+
+  if (imageWrapper) {
+    imageWrapper.removeAttribute('data-image-loading-animation');
+  }
+}
+ $(document).ready(function(){
+    $(".linklabel").each(function() {
+      var html = $(this).html().split(" ");
+      html = html.slice(0,1).join(" ") + "<br />" + "<p class='linklabel'>" + html.slice(1,11).join(" ") + "</p>";
+      $(this).html(html);
+    });
+
+  
+});
+
+var loadUserData = function() {
+  // Find the container that will hold the recommendations
+var list = document.querySelector("#userlistdata");
+var request = new XMLHttpRequest();
+
+request.open(
+ "GET","https://reqres.in/api/users"
+);
+
+request.onload = function() {
+
+ var products = JSON.parse(request.response).data;
+console.log(products);
+
+ // Append product recommendations to the DOM.
+ list.innerHTML = products.map(function(product) 
+                     { return userData(product) }
+                     ).join("");
+};
+
+
+// Send AJAX request
+request.send();
+
+function userData(data) {
+ return [
+   '<div>',
+      
+       '<div>',
+       '<div>',
+       '<img src="'+ data.avatar +'" />',
+       '</div>',
+       '<div>',
+       '<span><b>Email</b></span><p class="user_title">' + data.email + '</p>',
+       '<span><b>First name</b></span><p class="user_name">' + data.first_name + '</p>',
+       '<span><b>Last name</b></span><p class="user_lastname">' + data.last_name + '</p>',
+       '</div>',
+       '</div>',
+      
+       
+     '</a>',
+   '</div>'
+ ].join("");
+}
+};
+
+loadUserData();
+        
+ var loadProductRecommendationsIntoSection = function() {
+     // Find the container that will hold the recommendations
+  var list = document.querySelector(".product-recommendations__list");
+  // Get the base URL for translated product recommendations
+  var baseUrl = list.dataset.baseUrl;
+  // Get the product ID to request the product recommendations
+  var productId = list.dataset.productId;
+  // Create an AJAX request
+  var request = new XMLHttpRequest();
+
+  request.open(
+    "GET",
+    baseUrl + ".json?product_id=" + productId + "&limit=4"
+  );
+
+  request.onload = function() {
+    if (request.status === 404 || request.status === 422) {
+      return hideRecommendationsSection();
+    }
+
+    var products = JSON.parse(request.response).products;
+
+    if (products.length === 0) {
+      return hideRecommendationsSection();
+    }
+
+    // Append product recommendations to the DOM.
+    list.innerHTML = products.map(function(product) { return renderProduct(product) }).join("");
+  };
+
+  request.onerror = function() {
+    hideRecommendationsSection();
+  };
+
+  // Send AJAX request
+  request.send();
+
+  function hideRecommendationsSection() {
+    list.style.display = "none";
+  }
+
+  function renderProduct(product) {
+    return [
+      '<div>',
+        '<a href="' + product.url + '" class="product__anchor">',
+          '<img class="product__img" src="' + product.featured_image + '" alt="'+ product.title +'"/>',
+          '<p class="product__title">' + product.title + '</p>',
+         
+          
+        '</a>',
+      '</div>'
+    ].join("");
+  }
+ };
+   // Fetching the recommendations on page load
+   loadProductRecommendationsIntoSection();
 
